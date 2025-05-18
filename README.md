@@ -34,7 +34,7 @@ pip install timm
 
 Step 4: Install `CVMT`
 ```shell
-git clone https://github.com/hoiliu-0801/DNTR.git
+https://github.com/RSIP-NJUPT/CVMT.git
 cd CVMT
 python setup.py develop
 ```
