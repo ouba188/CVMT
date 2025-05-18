@@ -5,7 +5,7 @@ This an official Pytorch implementation of our paper ["Complex-valued mix transf
 
 To enhance portability, the CVMT codebase is entirely built on the [MMDetection](https://github.com/open-mmlab/mmdetection). Assume that your environment has satisfied the above requirements, please follow the following steps for installation.
 
-## Installation and Get Started(●'◡'●)ﾉ
+## Installation and Get Started (●'◡'●)ﾉ
 
 Step 1: Create a conda environment
 
@@ -37,3 +37,16 @@ https://github.com/RSIP-NJUPT/CVMT.git
 cd CVMT
 python setup.py develop
 ```
+
+## Performance ('ᴗ' )و
+Table 1. Training Set: **FAIR-CSAR** trainval set, Testing Set: **FAIR-CSAR** test set, 12 epochs.
+|Method | Backbone | mAP | mAP<sub>50</sub> | mAP<sub>75</sub> |mAP<sub>S</sub> | mAP<sub>M</sub>  | 
+|:---:|:---:|:---:|:---:|:---:|:---:|:---: |
+DINO (Baseline) | R-50 | 28.9 | 67.4 | 20.1 | 29.9 | **31.4** | 
+CVMT  | R-50 | **32.4** | **73.6** | **23.1** | **33.6** | 26.7 |
+
+Table 2. Training Set: **OpenSARShip** train set, Testing Set: **OpenSARShip** test set, 36 epochs.
+|Method | Backbone | mAP | mAP<sub>50</sub> | mAP<sub>75</sub> |mAP<sub>S</sub> | mAP<sub>M</sub>  | 
+|:---:|:---:|:---:|:---:|:---:|:---:|:---: |
+DINO (Baseline) | R-50 | 74.6 | 88.2 | 78.6 | 74.8 | 70.0 | 
+CVMT  | R-50 | **77.5** | **89.0** | **80.0** | **77.0** | **91.0** |
