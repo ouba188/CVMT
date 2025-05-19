@@ -51,7 +51,7 @@ Testing CVMT, for example :
 ```
 python tools/test.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py path/to/your/checkpoint
 ```
-## Data Preparation σ`∀´)σ
+## Data Preparation σ(`∀´)σ
 - The [OpenSARShip](https://ieeexplore.ieee.org/document/8067489) & [FAIR-CSAR](https://radars.ac.cn/web/data/getData?dataType=FAIR_CSAR_en&pageType=en) or other complex-valued SAR datasets should be prepared as follows:
 ```
 Dataset_root
