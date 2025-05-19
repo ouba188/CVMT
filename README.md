@@ -46,7 +46,7 @@ Training CVMT, for example :
 python tools/train.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py
 ```
 
-Testing DNTR, for example :
+Testing CVMT, for example :
 ```
 python tools/test.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py path/to/your/checkpoint
 ```
