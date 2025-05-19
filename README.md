@@ -5,7 +5,7 @@ This an official Pytorch implementation of our paper ["Complex-valued mix transf
 
 To enhance portability, the CVMT codebase is entirely built on the [MMDetection](https://github.com/open-mmlab/mmdetection). Assume that your environment has satisfied the above requirements, please follow the following steps for installation.
 
-## Installation and Get Started (●'◡'●)ﾉ
+## Installation (●'◡'●)ﾉ
 
 Step 1: Create a conda environment
 
@@ -37,8 +37,36 @@ https://github.com/RSIP-NJUPT/CVMT.git
 cd CVMT
 python setup.py develop
 ```
+## Get Started (ง๑ •̀_•́)ง
+Get Started with single GPU
+
+Training CVMT, for example :
+
+```shell
+python tools/train.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py
+```
+
+Testing DNTR, for example :
+```
+python tools/test.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py path/to/your/checkpoint
+```
+## Data Preparation ⁽⁽ ◟(∗ ˊωˋ ∗)◞ ⁾⁾
+- The [OpenSARShip](https://ieeexplore.ieee.org/document/8067489) & [FAIR-CSAR](https://radars.ac.cn/web/data/getData?dataType=FAIR_CSAR_en&pageType=en) or other complex-valued SAR datasets should be prepared as follows:
+```
+Dataset_root
+├── train
+│   ├── IT (Amplitude data)
+│   ├── POS (Phase data)   
+├── val
+│   ├── IT (Amplitude data)
+│   ├── POS (Phase data)
+├── annotations
+│   ├── annotations_train.json
+│   ├── annotations_val.json
+```
 
 ## Performance ('ᴗ' )و
+
 Table 1. Training Set: **FAIR-CSAR** trainval set, Testing Set: **FAIR-CSAR** test set, 12 epochs.
 |Method | Backbone | mAP | mAP<sub>50</sub> | mAP<sub>75</sub> |mAP<sub>S</sub> | mAP<sub>M</sub>  | 
 |:---:|:---:|:---:|:---:|:---:|:---:|:---: |
@@ -50,3 +78,8 @@ Table 2. Training Set: **OpenSARShip** train set, Testing Set: **OpenSARShip** t
 |:---:|:---:|:---:|:---:|:---:|:---:|:---: |
 DINO (Baseline) | R-50 | 74.6 | 88.2 | 78.6 | 74.8 | 70.0 | 
 CVMT  | R-50 | **77.5** | **89.0** | **80.0** | **77.0** | **91.0** |
+
+
+
+
+
