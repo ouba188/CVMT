@@ -50,7 +50,7 @@ Testing CVMT, for example :
 ```
 python tools/test.py ./mmdet/configs/CVMT/CVMT_4scale_r50_8xb2_12e_coco.py path/to/your/checkpoint
 ```
-## Data Preparation ⁽⁽ ◟(∗ ˊωˋ ∗)◞ ⁾⁾
+## Data Preparation σ`∀´)σ
 - The [OpenSARShip](https://ieeexplore.ieee.org/document/8067489) & [FAIR-CSAR](https://radars.ac.cn/web/data/getData?dataType=FAIR_CSAR_en&pageType=en) or other complex-valued SAR datasets should be prepared as follows:
 ```
 Dataset_root
@@ -64,6 +64,15 @@ Dataset_root
 │   ├── annotations_train.json
 │   ├── annotations_val.json
 ```
+
+## Pre-Trained Models ヾ(*´∀ ˋ*)ﾉ
+You can leverage the pretrained weights we provide in this work as a starting point for your own fine‑tuning.The pretrained CVMT models are available on Baidu Netdisk:
+
+**Link:** [https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA](https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA)
+
+**Extraction code:** iq95
+
+
 
 ## Performance ('ᴗ' )و
 
