@@ -3,10 +3,10 @@ This an official Pytorch implementation of our paper ["Complex-valued mix transf
 
 ![img](https://github.com/RSIP-NJUPT/CVMT/blob/main/network_base.png)
 
-To enhance portability, the CVMT codebase is entirely built on the [MMDetection](https://github.com/open-mmlab/mmdetection). Assume that your environment has satisfied the above requirements, please follow the following steps for installation.
+- Notablely, CVMT is built on top of [MMDetection](https://github.com/open-mmlab/mmdetection) with an added dual-stream data loading and processing mechanism. We hope that our approach and code will be helpful for your related research.
 
 ## Installation (●'◡'●)ﾉ
-
+Please follow the following steps for installation.
 Step 1: Create a conda environment
 
 ```shell
