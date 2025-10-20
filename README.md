@@ -7,7 +7,7 @@ This an official Pytorch implementation of our paper ["Complex-valued mix transf
 
 ## ⚡News
 
-- `Oct 17, 2025`: 🚀 CVMT is accepted to ISPRS Journal of Photogrammetry and Remote Sensing!
+- `Oct 17, 2025`: 🚀 CVMT is accepted to **ISPRS Journal of Photogrammetry and Remote Sensing**!
 
 ## Installation (●'◡'●)ﾉ
 Please follow the following steps for installation.
