@@ -291,4 +291,28 @@ class CVMT(DeformableDETR):
         )
         return decoder_outputs_dict
 
+    def process_img_feats(
+        self,
+        img_feats: Tensor
+    ):
+        """Flatten multi-scale feature maps into sequence for Transformer input.
 
+        Args:
+            img_feats (list[Tensor]): feature maps with shapes (B, C, H, W)
+
+        Returns:
+            feat_flatten: list of flattened tensors (B, H*W, C)
+            num_point_list: list of H*W sizes per level
+            ori_feat_flatten: concatenated features (B, \sum H*W, C)
+        """
+        feat_flatten = []
+        num_point_list = []
+        for feat in img_feats:
+            batch_size, c, h, w = feat.shape
+            # flatten spatial dims and permute to (B, H*W, C)
+            flattened_feat = feat.view(batch_size, c, -1).permute(0, 2, 1)
+            feat_flatten.append(flattened_feat)
+            num_point_list.append(h * w)
+        # concatenate all levels along sequence dimension
+        ori_feat_flatten = torch.cat(feat_flatten, dim=1)
+        return feat_flatten, num_point_list, ori_feat_flatten
