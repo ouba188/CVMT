@@ -5,6 +5,10 @@ This an official Pytorch implementation of our paper ["Complex-valued mix transf
 
 - Notablely, CVMT is built on top of [MMDetection3.x](https://github.com/open-mmlab/mmdetection) with an added dual-stream data loading and processing mechanism. We hope that our approach and code will be helpful for your related research.
 
+## News
+
+- `Oct 17, 2025`: 🚀 CVMT is accepted to ISPRS Journal of Photogrammetry and Remote Sensing!
+
 ## Installation (●'◡'●)ﾉ
 Please follow the following steps for installation.
 
