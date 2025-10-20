@@ -69,6 +69,7 @@ Dataset_root
 │   ├── annotations_train.json
 │   ├── annotations_val.json
 ```
+> Note: In this project, annotations from OpenSARShip (VOC format) and FAIR-CSAR (DOTA format) have been converted to the COCO-style `[x, y, w, h]` format.
 
 ## Pre-Trained Models ヾ(*´∀ ˋ*)ﾉ
 You can leverage the pretrained weights we provide in this work as a starting point for your own fine‑tuning.The pretrained CVMT models are available on the [![models](https://img.shields.io/badge/BaiduNetdisk-Pretrained-blue.svg?logo=baidu&logoColor=white)](https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA).
