@@ -7,7 +7,7 @@ from torch.nn.modules.batchnorm import BatchNorm2d
 from torch.nn.modules.normalization import GroupNorm
 from torch.optim.adamw import AdamW
 from mmdet.models import (ChannelMapper, DetDataPreprocessor_CVMT,
-                          DINOHead, ResNet_CVMT )
+                          DINOHead, ResNet50_CVMT)
 from mmdet.models.losses.focal_loss import FocalLoss
 from mmdet.models.losses.iou_loss import GIoULoss
 from mmdet.models.losses.smooth_l1_loss import L1Loss
@@ -32,7 +32,7 @@ model = dict(
         bgr_to_rgb=False,
         pad_size_divisor=1),
     backbone=dict(
-        type=ResNet_CVMT,
+        type=ResNet50_CVMT,
         depth=50,
         num_stages=4,
         out_indices=(1, 2, 3),
@@ -129,8 +129,6 @@ param_scheduler = [
         gamma=0.1)
 ]
 
-auto_scale_lr = dict(base_batch_size=2)
-
 default_hooks = dict(
     timer=dict(type=IterTimerHook),
     logger=dict(type=LoggerHook, interval=50),
@@ -143,22 +141,5 @@ default_hooks = dict(
 ),
     sampler_seed=dict(type=DistSamplerSeedHook),
 visualization=dict(type=DetVisualizationHook))
-
-env_cfg = dict(
-    cudnn_benchmark=False,
-    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0),
-    dist_cfg=dict(backend='nccl'),
-
-)
-
-vis_backends = [dict(type=LocalVisBackend)]
-visualizer = dict(
-    type=DetLocalVisualizer, vis_backends=vis_backends, name='visualizer')
-log_processor = dict(type=LogProcessor, window_size=50, by_epoch=True)
-
-log_level = 'INFO'
-load_from = None
-resume = False
-
 
 

@@ -169,7 +169,7 @@ class DetDataPreprocessor_CVMT(ImgDataPreprocessor):
     def _get_pad_shape(self, data: dict) -> List[tuple]:
         """Get the pad_shape of each image based on data and
         pad_size_divisor."""
-        _batch_inputs = data['inputs'][0] #[0]是幅度图像，[1]是相位图像，当作两个数据集并行处理，处理两次
+        _batch_inputs = data['inputs'][0]
         # Process data with `pseudo_collate`.
         if is_seq_of(_batch_inputs, torch.Tensor):
             batch_pad_shape = []

@@ -1,10 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import numpy as np
 import torch
-import  cv2
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import DropPath
 import warnings
 import torch.nn as nn
 import torch.utils.checkpoint as cp
@@ -304,7 +301,7 @@ class Bottleneck(BaseModule):
         return out
 
 @MODELS.register_module()
-class ResNet_CVMT(BaseModule):
+class ResNet50_CVMT(BaseModule):
     """ResNet backbone.
 
     Args:
@@ -390,7 +387,7 @@ class ResNet_CVMT(BaseModule):
                  zero_init_residual=True,
                  pretrained=None,
                  init_cfg=None):
-        super(ResNet_CVMT, self).__init__(init_cfg)
+        super(ResNet50_CVMT, self).__init__(init_cfg)
         self.zero_init_residual = zero_init_residual
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
@@ -680,7 +677,7 @@ class ResNet_CVMT(BaseModule):
     def train(self, mode=True):
         """Convert the model into training mode while keep normalization layer
         freezed."""
-        super(ResNet_CVMT, self).train(mode)
+        super(ResNet50_CVMT, self).train(mode)
         self._freeze_stages()
         if mode and self.norm_eval:
             for m in self.modules():
@@ -688,8 +685,6 @@ class ResNet_CVMT(BaseModule):
                 if isinstance(m, _BatchNorm):
                     m.eval()
 
-import torch
-from torch import nn
 
 class SFLLayer(nn.Module):
     """
@@ -733,14 +728,9 @@ class SFLLayer(nn.Module):
             sfeat_size=sfeat_size,
             n_iter=n_iter
         )
-
         # 4. DropPath for stochastic depth regularization (Identity if rate=0)
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
-        # 5. Final normalization before output (batch norm)
-        self.norm2 = nn.BatchNorm2d(dim)
-
-        # 6. Optional LayerScale: learnable per-channel scaling of residual
         if layerscale:
             # gamma_1 start very small to stabilize initial training
             self.gamma_1 = nn.Parameter(

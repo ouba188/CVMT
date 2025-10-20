@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Tuple
+from typing import Optional, Dict, List, Tuple, Union
 import torch
 from torch import Tensor, nn
 from torch.nn.init import normal_
@@ -8,7 +8,9 @@ from mmdet.utils import OptConfigType
 from ..layers import (CdnQueryGenerator, DeformableDetrTransformerEncoder,
                       DinoTransformerDecoder, SinePositionalEncoding)
 from .deformable_detr import DeformableDETR, MultiScaleDeformableAttention
-
+from mmdet.structures import DetDataSample
+ForwardResults = Union[Dict[str, torch.Tensor], List[DetDataSample],
+                       Tuple[torch.Tensor], torch.Tensor]
 @MODELS.register_module()
 class CVMT(DeformableDETR):
     """Implementation of the CVMT: Complex-valued mix transformer for SAR ship detection.
@@ -116,13 +118,11 @@ class CVMT(DeformableDETR):
         """Full forward pass through encoder, query prep and decoder."""
         # prepare encoder & partial decoder inputs
         encoder_inputs_dict, decoder_inputs_dict = self.pre_transformer(
-            img_feats, batch_data_samples
-        )
-        # run encoder
+            img_feats, batch_data_samples)
         encoder_outputs_dict = self.forward_encoder(**encoder_inputs_dict)
         # flatten original multi-scale image features
-        feat_flatten, num_point_list, ori_feat_flatten = self.process_img_feats(img_feats)
-        encoder_outputs_dict['ori_feat_flatten'] = ori_feat_flatten
+        feat_flatten, num_point_list, fused_feat_flatten = self.process_img_feats(img_feats)
+        encoder_outputs_dict['fused_feat_flatten'] = fused_feat_flatten
         encoder_outputs_dict['num_point_list'] = num_point_list
         # prepare decoder inputs (queries, reference points, etc.)
         tmp_dec_in, head_inputs_dict = self.pre_decoder(
@@ -130,7 +130,6 @@ class CVMT(DeformableDETR):
             batch_data_samples=batch_data_samples
         )
         decoder_inputs_dict.update(tmp_dec_in)
-
         # run decoder
         decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)
         head_inputs_dict.update(decoder_outputs_dict)
@@ -142,7 +141,7 @@ class CVMT(DeformableDETR):
         memory: Tensor,
         memory_mask: Tensor,
         spatial_shapes: Tensor,
-        ori_feat_flatten: Tensor,  # original flattened features
+        fused_feat_flatten: Tensor,  # original flattened features
         num_point_list: Tensor,
         batch_data_samples: OptSampleList = None,
     ) -> Tuple[Dict, Dict]:
@@ -153,73 +152,73 @@ class CVMT(DeformableDETR):
             self.decoder.num_layers
         ].out_features
         # generate proposals from encoder memory and original(fused) features
-        output_memory, output_proposals = self.gen_encoder_output_proposals(
+        output_enc_memory, output_enc_proposals = self.gen_encoder_output_proposals(
             memory, memory_mask, spatial_shapes
         )
-        output_ori, output_ori_proposals = self.gen_encoder_output_proposals(
-            ori_feat_flatten, memory_mask, spatial_shapes
+        output_fused, output_fused_proposals = self.gen_encoder_output_proposals(
+            fused_feat_flatten, memory_mask, spatial_shapes
         )
         # compute class logits for proposals
         enc_outputs_class = self.bbox_head.cls_branches[
             self.decoder.num_layers
-        ](output_memory)
-        ori_output_class = self.bbox_head.cls_branches[
+        ](output_enc_memory)
+        fused_output_class = self.bbox_head.cls_branches[
             self.decoder.num_layers
-        ](output_ori)
+        ](output_fused)
 
         # compute bbox regression and add proposals shift
         enc_outputs_coord_unact = (
             self.bbox_head.reg_branches[self.decoder.num_layers](
-                output_memory
-            ) + output_proposals
+                output_enc_memory
+            ) + output_enc_proposals
         )
-        ori_outputs_coord_unact = (
+        fused_outputs_coord_unact = (
             self.bbox_head.reg_branches[self.decoder.num_layers](
-                output_ori
-            ) + output_ori_proposals
+                output_fused
+            ) + output_fused_proposals
         )
 
         # select top-k proposals by classification score
-        topk_indices = torch.topk(
+        enc_topk_indices = torch.topk(
             enc_outputs_class.max(-1)[0],
             k=self.num_encoder_queries,
             dim=1
         )[1]
         # gather corresponding scores and coords
-        topk_score = torch.gather(
+        enc_topk_score = torch.gather(
             enc_outputs_class, 1,
-            topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features)
+            enc_topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features)
         )
-        topk_coords_unact = torch.gather(
+        enc_topk_coords_unact = torch.gather(
             enc_outputs_coord_unact, 1,
-            topk_indices.unsqueeze(-1).repeat(1, 1, 4)
+            enc_topk_indices.unsqueeze(-1).repeat(1, 1, 4)
         )
         # apply sigmoid to get normalized box centers/sizes
-        topk_coords = topk_coords_unact.sigmoid()
+        enc_topk_coords = enc_topk_coords_unact.sigmoid()
         # detach unactivated coords for regression targets
-        topk_coords_unact = topk_coords_unact.detach()
+        enc_topk_coords_unact = enc_topk_coords_unact.detach()
 
         # repeat same for original-feature proposals
-        ori_topk_indices = torch.topk(
-            ori_output_class.max(-1)[0],
+        fused_topk_indices = torch.topk(
+            fused_output_class.max(-1)[0],
             k=self.num_fused_queries,
             dim=1
         )[1]
-        ori_topk_score = torch.gather(
-            ori_output_class, 1,
-            ori_topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features)
+        fused_topk_score = torch.gather(
+            fused_output_class, 1,
+            fused_topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features)
         )
-        ori_topk_coords_unact = torch.gather(
-            ori_outputs_coord_unact, 1,
-            ori_topk_indices.unsqueeze(-1).repeat(1, 1, 4)
+        fused_topk_coords_unact = torch.gather(
+            fused_outputs_coord_unact, 1,
+            fused_topk_indices.unsqueeze(-1).repeat(1, 1, 4)
         )
-        ori_topk_coords = ori_topk_coords_unact.sigmoid()
-        ori_topk_coords_unact = ori_topk_coords_unact.detach()
+        fused_topk_coords = fused_topk_coords_unact.sigmoid()
+        fused_topk_coords_unact = fused_topk_coords_unact.detach()
 
         # concatenate encoder and original proposals
-        topk_coords_unact = torch.cat([topk_coords_unact, ori_topk_coords_unact], dim=1)
-        topk_coords = torch.cat([topk_coords, ori_topk_coords], dim=1)
-        topk_score = torch.cat([topk_score, ori_topk_score], dim=1)
+        topk_coords_unact = torch.cat([enc_topk_coords_unact, fused_topk_coords_unact], dim=1)
+        topk_coords = torch.cat([enc_topk_coords, fused_topk_coords], dim=1)
+        topk_score = torch.cat([enc_topk_score, fused_topk_score], dim=1)
 
         # prepare query embeddings (content queries)
         query = self.query_embedding.weight[:, None, :]
@@ -309,10 +308,65 @@ class CVMT(DeformableDETR):
         num_point_list = []
         for feat in img_feats:
             batch_size, c, h, w = feat.shape
-            # flatten spatial dims and permute to (B, H*W, C)
             flattened_feat = feat.view(batch_size, c, -1).permute(0, 2, 1)
             feat_flatten.append(flattened_feat)
             num_point_list.append(h * w)
-        # concatenate all levels along sequence dimension
-        ori_feat_flatten = torch.cat(feat_flatten, dim=1)
-        return feat_flatten, num_point_list, ori_feat_flatten
+        fused_feat_flatten = torch.cat(feat_flatten, dim=1)
+        return feat_flatten, num_point_list, fused_feat_flatten
+
+    def forward(self,
+                inputs: torch.Tensor,
+                data_samples: OptSampleList = None,
+                mode: str = 'tensor') -> ForwardResults:
+        """The unified entry for a forward process in both training and test.
+
+        The method should accept three modes: "tensor", "predict" and "loss":
+
+        - "tensor": Forward the whole network and return tensor or tuple of
+        tensor without any post-processing, same as a common nn.Module.
+        - "predict": Forward and return the predictions, which are fully
+        processed to a list of :obj:`DetDataSample`.
+        - "loss": Forward and return a dict of losses according to the given
+        inputs and data samples.
+
+        Note that this method doesn't handle either back propagation or
+        parameter update, which are supposed to be done in :meth:`train_step`.
+        Args:
+            inputs (torch.Tensor): The input tensor with shape
+                (N, C, ...) in general.
+            data_samples (list[:obj:`DetDataSample`], optional): A batch of
+                data samples that contain annotations and predictions.
+                Defaults to None.
+            mode (str): Return what kind of value. Defaults to 'tensor'.
+
+        Returns:
+            The return type depends on ``mode``.
+
+            - If ``mode="tensor"``, return a tensor or a tuple of tensor.
+            - If ``mode="predict"``, return a list of :obj:`DetDataSample`.
+            - If ``mode="loss"``, return a dict of tensor.
+
+        """
+        if mode == 'loss':
+            input1 = inputs[0].repeat(1,3,1,1)
+            input2 = inputs[1].repeat(1,3,1,1)
+            inputs = [input1, input2]
+            loss = self.loss(inputs, data_samples)
+            return loss
+
+        elif mode == 'predict':
+            input1 = inputs[0].repeat(1,3,1,1)
+            input2 = inputs[1].repeat(1,3,1,1)
+            inputs = [input1, input2]
+            predit = self.predict(inputs, data_samples)
+            return predit
+
+        elif mode == 'tensor':
+            input1 = inputs[0].repeat(1,3,1,1)
+            input2 = inputs[1].repeat(1,3,1,1)
+            inputs = [input1, input2]
+            return self._forward(inputs, data_samples)
+
+        else:
+            raise RuntimeError(f'Invalid mode "{mode}". '
+                               'Only supports loss, predict and tensor mode')

@@ -13,7 +13,7 @@ param_scheduler = [
         begin=0,
         end=max_epochs,
         by_epoch=True,
-        milestones=[30],  # 每10个epoch学习率衰减10%
+        milestones=[30],
         gamma=0.1)
 ]
 param_scheduler[0].update(dict(milestones=[30]))

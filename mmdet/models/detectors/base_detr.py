@@ -43,28 +43,20 @@ class DetectionTransformer(BaseDetector, metaclass=ABCMeta):
         data_preprocessor: OptConfigType = None,
         init_cfg: OptMultiConfig = None
     ) -> None:
-        # Initialize base detector with data preprocessing and init configs
         super().__init__(data_preprocessor=data_preprocessor, init_cfg=init_cfg)
 
-        # Attach train and test configs to bbox head settings
         bbox_head.update(train_cfg=train_cfg)
         bbox_head.update(test_cfg=test_cfg)
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
-
-        # Store Transformer-specific configs
         self.encoder = encoder
         self.decoder = decoder
         self.positional_encoding = positional_encoding
         self.num_queries = num_queries
-
-        # Build model components
-        self.backbone = MODELS.build(backbone)  # Construct backbone module
+        self.backbone = MODELS.build(backbone)
         if neck is not None:
-            self.neck = MODELS.build(neck)       # Optionally construct neck
-        self.bbox_head = MODELS.build(bbox_head)  # Construct bbox head
-
-        # Initialize layers specific to subclass implementation
+            self.neck = MODELS.build(neck)
+        self.bbox_head = MODELS.build(bbox_head)
         self._init_layers()
 
     @abstractmethod
@@ -87,11 +79,9 @@ class DetectionTransformer(BaseDetector, metaclass=ABCMeta):
         Returns:
             dict or list: Loss components.
         """
-        # Extract features from backbone and neck
+
         img_feats = self.extract_feat(batch_inputs)
-        # Forward through Transformer (encoder + decoder)
         head_inputs = self.forward_transformer(img_feats, batch_data_samples)
-        # Compute bbox head losses
         losses = self.bbox_head.loss(**head_inputs, batch_data_samples=batch_data_samples)
         return losses
 
@@ -112,13 +102,9 @@ class DetectionTransformer(BaseDetector, metaclass=ABCMeta):
         Returns:
             List[DetDataSample]: Predictions added to data samples.
         """
-        # Feature extraction
         img_feats = self.extract_feat(batch_inputs)
-        # Transformer forward
         head_inputs = self.forward_transformer(img_feats, batch_data_samples)
-        # Head prediction (bbox and class)
         preds = self.bbox_head.predict(**head_inputs, rescale=rescale, batch_data_samples=batch_data_samples)
-        # Attach predictions to data samples
         batch_data_samples = self.add_pred_to_datasample(batch_data_samples, preds)
         return batch_data_samples
 
@@ -157,14 +143,10 @@ class DetectionTransformer(BaseDetector, metaclass=ABCMeta):
         Returns:
             Dict: Inputs for bbox head, including hidden states and references.
         """
-        # Prepare inputs for encoder and partially for decoder
         enc_inputs, dec_inputs = self.pre_transformer(img_feats, batch_data_samples)
-        # Apply Transformer encoder
         enc_outputs = self.forward_encoder(**enc_inputs)
-        # Prepare decoder inputs from encoder outputs
         tmp_dec_inputs, head_inputs = self.pre_decoder(**enc_outputs)
         dec_inputs.update(tmp_dec_inputs)
-        # Run Transformer decoder
         dec_outputs = self.forward_decoder(**dec_inputs)
         head_inputs.update(dec_outputs)
         return head_inputs

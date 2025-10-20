@@ -9,7 +9,7 @@ from .base_det_dataset import BaseDetDataset
 
 @DATASETS.register_module()
 class CVMTCocoDataset(BaseDetDataset):
-    """Dataset for CVMT COCO with amplitude and phase images."""
+    """Dataset for CVMT COCO with amplitude and phase images.(Dual-branch implementation)"""
     METAINFO = {
         'classes':
         ('ship'),
@@ -20,7 +20,7 @@ class CVMTCocoDataset(BaseDetDataset):
     COCOAPI = COCO
     ANN_ID_UNIQUE = True
 
-    def __init__(self, data_prefix: dict = dict(img_prefix_amp='', img_prefix_phase=''), **kwargs): #kwargs是
+    def __init__(self, data_prefix: dict = dict(img_prefix_amp='', img_prefix_phase=''), **kwargs):
         self.img_prefix_amp = data_prefix.get('img_prefix_amp', None)
         self.img_prefix_phase = data_prefix.get('img_prefix_phase', None)
         super().__init__(data_prefix=data_prefix, **kwargs)
@@ -130,7 +130,7 @@ class CVMTCocoDataset(BaseDetDataset):
         return valid_data_infos
 
     def full_init(self):
-        "Load the comment file and set 'BaseDataset._fully_initialized' to True." ""
+        "Load the comment file and set 'BaseDataset._fully_initialized' to True."
         if self._fully_initialized:
             return
 

@@ -44,7 +44,7 @@ class DeformableDETR(DetectionTransformer):
         self.as_two_stage = as_two_stage
         self.num_feature_levels = num_feature_levels
 
-        if bbox_head is not None:  # Check if bbox_head configuration is provided
+        if bbox_head is not None:
             assert 'share_pred_layer' not in bbox_head and \
                    'num_pred_layer' not in bbox_head and \
                    'as_two_stage' not in bbox_head, \

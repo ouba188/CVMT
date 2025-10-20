@@ -5,8 +5,6 @@ from typing import Dict, List, Tuple, Union
 import torch
 from mmengine.model import BaseModel
 from torch import Tensor
-from torchvision.models.detection.ssd import backbone_urls
-
 from mmdet.structures import DetDataSample, OptSampleList, SampleList
 from mmdet.utils import InstanceList, OptConfigType, OptMultiConfig
 from ..utils import samplelist_boxtype2tensor
@@ -89,56 +87,20 @@ class BaseDetector(BaseModel, metaclass=ABCMeta):
             - If ``mode="predict"``, return a list of :obj:`DetDataSample`.
             - If ``mode="loss"``, return a dict of tensor.
         """
-        state = 'db'    #provide dual-branch input for backbone
-        if state == 'db':
-            if mode == 'loss':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = [input1,input2]
-                loss = self.loss(inputs, data_samples)
-                return loss
+        if mode == 'loss':
+            loss = self.loss(inputs, data_samples)
+            return loss
 
-            elif mode == 'predict':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = [input1,input2]
-                predit = self.predict(inputs, data_samples)
-                return predit
+        elif mode == 'predict':
+            predit = self.predict(inputs, data_samples)
+            return predit
 
-            elif mode == 'tensor':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = [input1,input2]
-                return self._forward(inputs, data_samples)
+        elif mode == 'tensor':
+            return self._forward(inputs, data_samples)
 
-            else:
-                raise RuntimeError(f'Invalid mode "{mode}". '
-                                   'Only supports loss, predict and tensor mode')
-        # provide the input of the backbone after adding the amplitude and phase elements one by one
-        elif state =='add':
-            if mode == 'loss':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = input1+input2
-                loss = self.loss(inputs, data_samples)
-                return loss
-
-            elif mode == 'predict':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = input1+input2
-                predit = self.predict(inputs, data_samples)
-                return predit
-
-            elif mode == 'tensor':
-                input1= inputs[0].repeat(1,3,1,1)
-                input2= inputs[1].repeat(1,3,1,1)
-                inputs = input1+input2
-                return self._forward(inputs, data_samples)
-
-            else:
-                raise RuntimeError(f'Invalid mode "{mode}". '
-                                   'Only supports loss, predict and tensor mode')
+        else:
+            raise RuntimeError(f'Invalid mode "{mode}". '
+                               'Only supports loss, predict and tensor mode')
 
     @abstractmethod
     def loss(self, batch_inputs: Tensor,
