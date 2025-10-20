@@ -40,7 +40,7 @@ Step 4: Install `CVMT`
 ```shell
 https://github.com/RSIP-NJUPT/CVMT.git
 cd CVMT
-python setup.py develop
+pip install -e .
 ```
 ## Get Started (ง๑ •̀_•́)ง
 Get Started with single GPU
