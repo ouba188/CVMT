@@ -67,7 +67,7 @@ Dataset_root
 ```
 
 ## Pre-Trained Models ヾ(*´∀ ˋ*)ﾉ
-You can leverage the pretrained weights we provide in this work as a starting point for your own fine‑tuning.The pretrained CVMT models are available on Baidu Netdisk:
+You can leverage the pretrained weights we provide in this work as a starting point for your own fine‑tuning.The pretrained CVMT models are available on the [![models](https://img.shields.io/badge/BaiduNetdisk-dataset-blue.svg?logo=baidu&logoColor=white)](https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA).
 
 **Link:** [https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA](https://pan.baidu.com/s/1bfvJrRYLDo9U-pkqZGGWUA)
 
