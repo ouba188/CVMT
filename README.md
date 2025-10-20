@@ -81,13 +81,13 @@ Table 1. Training Set: **FAIR-CSAR** trainval set, Testing Set: **FAIR-CSAR** te
 |Method | Backbone | mAP | mAP<sub>50</sub> | mAP<sub>75</sub> |mAP<sub>S</sub> | mAP<sub>M</sub>  | 
 |:---:|:---:|:---:|:---:|:---:|:---:|:---: |
 DINO (Baseline) | R-50 | 28.9 | 67.4 | 20.1 | 29.9 | **31.4** | 
-CVMT  | R-50 | **32.4** | **73.6** | **23.1** | **33.6** | 26.7 |
+CVMT  | R-50 | **33.0** | **74.1** | **23.9** | **34.1** | 26.9 |
 
 Table 2. Training Set: **OpenSARShip** train set, Testing Set: **OpenSARShip** test set, 36 epochs.
 |Method | Backbone | mAP | mAP<sub>50</sub> | mAP<sub>75</sub> |mAP<sub>S</sub> | mAP<sub>M</sub>  | 
 |:---:|:---:|:---:|:---:|:---:|:---:|:---: |
 DINO (Baseline) | R-50 | 74.6 | 88.2 | 78.6 | 74.8 | 70.0 | 
-CVMT  | R-50 | **77.5** | **89.0** | **80.0** | **77.0** | **91.0** |
+CVMT  | R-50 | **77.9** | **89.5** | **81.3** | **77.3** | **90.6** |
 
 
 
