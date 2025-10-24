@@ -1,4 +1,9 @@
 # CVMT：Complex-valued mix transformer for SAR ship detection
+<p align="center">
+<a href="https://doi.org/10.1016/j.isprsjprs.2025.10.018"><img src="https://img.shields.io/badge/Paper-ISPRS%20JP%26RS-%23FF4203"></a>
+
+</p>
+
 This an official Pytorch implementation of our paper ["Complex-valued mix transformer for SAR ship detection"]. The specific details of the framework are as follows.
 
 ![img](https://github.com/RSIP-NJUPT/CVMT/blob/main/network_base.png)
