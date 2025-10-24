@@ -4,7 +4,7 @@
 
 </p>
 
-This an official Pytorch implementation of our paper ["Complex-valued mix transformer for SAR ship detection"]. The specific details of the framework are as follows.
+This an official Pytorch implementation of our paper **"Complex-valued mix transformer for SAR ship detection"**. The specific details of the framework are as follows.
 
 ![img](https://github.com/RSIP-NJUPT/CVMT/blob/main/network_base.png)
 
@@ -99,7 +99,16 @@ Table 2. Training Set: **OpenSARShip** train set, Testing Set: **OpenSARShip** t
 DINO (Baseline) | R-50 | 74.6 | 88.2 | 78.6 | 74.8 | 70.0 | 
 CVMT  | R-50 | **77.9** | **89.5** | **81.3** | **77.3** | **90.6** |
 
+## 📘Citation
+If you find our work helpful, please consider citing our paper and giving us a ⭐! Thank you very much!
 
-
-If you find our work helpful, please consider giving us a ⭐!
+```bibtex
+@article{NI20261,
+title = {Complex-valued mix transformer for SAR ship detection},
+author = {Kang Ni and Pengcheng Wang and Zhizhong Zheng and Yanfei Zhong},
+journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+year = {2026},
+doi = {https://doi.org/10.1016/j.isprsjprs.2025.10.018}
+}
+```
 
