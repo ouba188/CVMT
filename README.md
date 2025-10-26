@@ -35,7 +35,7 @@ Step 3: Install OpenMMLab codebases
 #Install MMEngine and MMCV using MIM
 pip install -U openmim
 mim install mmengine
-mim install "mmcv==2.1.0"
+mim install "mmcv>=2.0.0rc4,<2.1.0"
 mim install "mmdet>=3.0.0rc2,<3.2.0"
 #Required packages
 pip install timm
